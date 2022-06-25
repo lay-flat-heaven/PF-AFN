@@ -13,8 +13,8 @@ from models.afwm import AFWM
 from copytool.copy_utils import get_pairs,get_pair
 from edge.mask_get import batch_edging,single_edging
 
-# device = "cuda" if torch.cuda.is_available() else "cpu"
-device = "cpu"
+device = "cuda" if torch.cuda.is_available() else "cpu"
+# device = "cpu"
 
 def futurama_edge(srcs):
     for src in srcs:
