@@ -26,6 +26,7 @@ def futurama_edge(srcs):
 
         single_edging(image_path_full,save_path_full)
 
+
 def futurama_pair(peos, clos):
 
     get_pair(peos, clos, note="./pairs.txt")
@@ -93,14 +94,15 @@ def futurama_generate(peos, clos):
                 a = real_image.float().to(device)
                 b = clothes.to(device)
                 c = p_tryon
-                combine = torch.cat([a[0], b[0], c[0]], 2).squeeze()
+                combine = c[0].squeeze()
                 cv_img = (combine.permute(1, 2, 0).detach().cpu().numpy() + 1) / 2
                 rgb = (cv_img * 255).astype(np.uint8)
                 bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
                 peo = peos[step]
                 clo = clos[step]
                 # print(peos,clos,step)
-                name = peo[:-4] + "_" + clo[:-4] + ".jpg"
+                name = peo[:-4] + "_" + clo[:-4]
+                print(name)
                 cv2.imwrite(sub_path + '/' + name + '.jpg', bgr)
 
             step += 1
@@ -199,6 +201,7 @@ def futurama_all(peos, clos):
                 peo = peos[step]
                 clo = clos[step]
                 name = peo[:-4] + "_" + clo[:-4] + ".jpg"
+                print(name)
                 cv2.imwrite(sub_path + '/' + name + '.jpg', bgr)
 
             step += 1
@@ -208,5 +211,4 @@ def futurama_all(peos, clos):
 if __name__ == "__main__":
     peos = os.listdir("./dataset/real_img")
     clos = os.listdir("./dataset/real_clothes")
-    print((peos))
     futurama_single(peos,clos)

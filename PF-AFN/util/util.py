@@ -20,6 +20,7 @@ def tensor2im(image_tensor, imtype=np.uint8, normalize=True):
 
     return image_numpy
 
+
 def tensor2label(label_tensor, n_label, imtype=np.uint8):
     if n_label == 0:
         return tensor2im(label_tensor, imtype)
@@ -49,7 +50,7 @@ def mkdir(path):
 
 
 def uint82bin(n, count=8):
-    """returns the binary of integer n, count refers to amount of bits"""
+
     return ''.join([str((n >> y) & 1) for y in range(count-1, -1, -1)])
 
 def labelcolormap(N):

@@ -24,10 +24,10 @@ class ResBlock(nn.Module):
         self.block = nn.Sequential(
             nn.BatchNorm2d(in_channels),
             nn.ReLU(inplace=True),
-            nn.Conv2d(in_channels, in_channels, kernel_size=3, padding=1, bias=False),
+            nn.Conv2d(in_channels, in_channels, kernel_size=(3,3), padding=1, bias=False),
             nn.BatchNorm2d(in_channels),
             nn.ReLU(inplace=True),
-            nn.Conv2d(in_channels, in_channels, kernel_size=3, padding=1, bias=False)
+            nn.Conv2d(in_channels, in_channels, kernel_size=(3,3), padding=1, bias=False)
             )
 
     def forward(self, x):
@@ -40,7 +40,7 @@ class DownSample(nn.Module):
         self.block=  nn.Sequential(
             nn.BatchNorm2d(in_channels),
             nn.ReLU(inplace=True),
-            nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=2, padding=1, bias=False)
+            nn.Conv2d(in_channels, out_channels, kernel_size=(3,3), stride=(2,2), padding=1, bias=False)
             )
 
     def forward(self, x):
@@ -61,7 +61,7 @@ class FeatureEncoder(nn.Module):
                 encoder = nn.Sequential(DownSample(chns[i-1], out_chns),
                                          ResBlock(out_chns),
                                          ResBlock(out_chns))
-            
+
             self.encoders.append(encoder)
 
         self.encoders = nn.ModuleList(self.encoders)
@@ -81,19 +81,19 @@ class RefinePyramid(nn.Module):
 
         self.adaptive = []
         for in_chns in list(reversed(chns)):
-            adaptive_layer = nn.Conv2d(in_chns, fpn_dim, kernel_size=1)
+            adaptive_layer = nn.Conv2d(in_chns, fpn_dim, kernel_size=(1,1))
             self.adaptive.append(adaptive_layer)
         self.adaptive = nn.ModuleList(self.adaptive)
 
         self.smooth = []
         for i in range(len(chns)):
-            smooth_layer = nn.Conv2d(fpn_dim, fpn_dim, kernel_size=3, padding=1)
+            smooth_layer = nn.Conv2d(fpn_dim, fpn_dim, kernel_size=(3,3), padding=1)
             self.smooth.append(smooth_layer)
         self.smooth = nn.ModuleList(self.smooth)
 
     def forward(self, x):
         conv_ftr_list = x
-        
+
         feature_list = []
         last_feature = None
         for i, conv_ftr in enumerate(list(reversed(conv_ftr_list))):
@@ -116,23 +116,23 @@ class AFlowNet(nn.Module):
         self.netRefine = []
         for i in range(num_pyramid):
             netMain_layer = torch.nn.Sequential(
-                torch.nn.Conv2d(in_channels=49, out_channels=128, kernel_size=3, stride=1, padding=1),
+                torch.nn.Conv2d(in_channels=49, out_channels=128, kernel_size=(3,3), stride=(1,1), padding=1),
                 torch.nn.LeakyReLU(inplace=False, negative_slope=0.1),
-                torch.nn.Conv2d(in_channels=128, out_channels=64, kernel_size=3, stride=1, padding=1),
+                torch.nn.Conv2d(in_channels=128, out_channels=64, kernel_size=(3,3), stride=(1,1), padding=1),
                 torch.nn.LeakyReLU(inplace=False, negative_slope=0.1),
-                torch.nn.Conv2d(in_channels=64, out_channels=32, kernel_size=3, stride=1, padding=1),
+                torch.nn.Conv2d(in_channels=64, out_channels=32, kernel_size=(3,3), stride=(1,1), padding=1),
                 torch.nn.LeakyReLU(inplace=False, negative_slope=0.1),
-                torch.nn.Conv2d(in_channels=32, out_channels=2, kernel_size=3, stride=1, padding=1)
+                torch.nn.Conv2d(in_channels=32, out_channels=2, kernel_size=(3,3), stride=(1,1), padding=1)
             )
 
             netRefine_layer = torch.nn.Sequential(
-                torch.nn.Conv2d(2 * fpn_dim, out_channels=128, kernel_size=3, stride=1, padding=1),
+                torch.nn.Conv2d(2 * fpn_dim, out_channels=128, kernel_size=(3,3), stride=(1,1), padding=1),
                 torch.nn.LeakyReLU(inplace=False, negative_slope=0.1),
-                torch.nn.Conv2d(in_channels=128, out_channels=64, kernel_size=3, stride=1, padding=1),
+                torch.nn.Conv2d(in_channels=128, out_channels=64, kernel_size=(3,3), stride=(1,1), padding=1),
                 torch.nn.LeakyReLU(inplace=False, negative_slope=0.1),
-                torch.nn.Conv2d(in_channels=64, out_channels=32, kernel_size=3, stride=1, padding=1),
+                torch.nn.Conv2d(in_channels=64, out_channels=32, kernel_size=(3,3), stride=(1,1), padding=1),
                 torch.nn.LeakyReLU(inplace=False, negative_slope=0.1),
-                torch.nn.Conv2d(in_channels=32, out_channels=2, kernel_size=3, stride=1, padding=1)
+                torch.nn.Conv2d(in_channels=32, out_channels=2, kernel_size=(3,3), stride=(1,1), padding=1)
             )
             self.netMain.append(netMain_layer)
             self.netRefine.append(netRefine_layer)

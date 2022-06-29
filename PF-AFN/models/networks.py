@@ -12,8 +12,8 @@ class UnetSkipConnectionBlock(nn.Module):
 
         if input_nc is None:
             input_nc = outer_nc
-        downconv = nn.Conv2d(input_nc, inner_nc, kernel_size=4,
-                             stride=2, padding=1, bias=use_bias)
+        downconv = nn.Conv2d(input_nc, inner_nc, kernel_size=(4,4),
+                             stride=(2,2), padding=1, bias=use_bias)
         downrelu = nn.LeakyReLU(0.2, True)
         uprelu = nn.ReLU(True)
         if norm_layer != None:
@@ -22,13 +22,13 @@ class UnetSkipConnectionBlock(nn.Module):
 
         if outermost:
             upsample = nn.Upsample(scale_factor=2, mode='bilinear')
-            upconv = nn.Conv2d(inner_nc * 2, outer_nc, kernel_size=3, stride=1, padding=1, bias=use_bias)
+            upconv = nn.Conv2d(inner_nc * 2, outer_nc, kernel_size=(3,3), stride=(1,1), padding=1, bias=use_bias)
             down = [downconv]
             up = [uprelu, upsample, upconv]
             model = down + [submodule] + up
         elif innermost:
             upsample = nn.Upsample(scale_factor=2, mode='bilinear')
-            upconv = nn.Conv2d(inner_nc, outer_nc, kernel_size=3, stride=1, padding=1, bias=use_bias)
+            upconv = nn.Conv2d(inner_nc, outer_nc, kernel_size=(3,3), stride=(1,1), padding=1, bias=use_bias)
             down = [downrelu, downconv]
             if norm_layer == None:
                 up = [uprelu, upsample, upconv]
@@ -37,7 +37,7 @@ class UnetSkipConnectionBlock(nn.Module):
             model = down + up
         else:
             upsample = nn.Upsample(scale_factor=2, mode='bilinear')
-            upconv = nn.Conv2d(inner_nc*2, outer_nc, kernel_size=3, stride=1, padding=1, bias=use_bias)
+            upconv = nn.Conv2d(inner_nc*2, outer_nc, kernel_size=(3,3), stride=(1,1), padding=1, bias=use_bias)
             if norm_layer == None:
                 down = [downrelu, downconv]
                 up = [uprelu, upsample, upconv]
@@ -64,16 +64,16 @@ class ResidualBlock(nn.Module):
         self.relu = nn.ReLU(True)
         if norm_layer == None:
             self.block = nn.Sequential(
-                nn.Conv2d(in_features, in_features, 3, 1, 1, bias=False),
+                nn.Conv2d(in_features, in_features, kernel_size=(3,3), stride=(1,1), padding=1, bias=False),
                 nn.ReLU(inplace=True),
-                nn.Conv2d(in_features, in_features, 3, 1, 1, bias=False),
+                nn.Conv2d(in_features, in_features, kernel_size=(3,3), stride=(1,1), padding=1, bias=False),
             )
         else:
             self.block = nn.Sequential(
-                nn.Conv2d(in_features, in_features, 3, 1, 1, bias=False),
+                nn.Conv2d(in_features, in_features, kernel_size=(3,3), stride=(1,1), padding=1, bias=False),
                 norm_layer(in_features),
                 nn.ReLU(inplace=True),
-                nn.Conv2d(in_features, in_features, 3, 1, 1, bias=False),
+                nn.Conv2d(in_features, in_features, kernel_size=(3,3), stride=(1,1), padding=1, bias=False),
                 norm_layer(in_features)
             )
 
@@ -112,8 +112,8 @@ class ResUnetSkipConnectionBlock(nn.Module):
 
         if input_nc is None:
             input_nc = outer_nc
-        downconv = nn.Conv2d(input_nc, inner_nc, kernel_size=3,
-                             stride=2, padding=1, bias=use_bias)
+        downconv = nn.Conv2d(input_nc, inner_nc, kernel_size=(3,3),
+                             stride=(2,2), padding=1, bias=use_bias)
 
         res_downconv = [ResidualBlock(inner_nc, norm_layer), ResidualBlock(inner_nc, norm_layer)]
         res_upconv = [ResidualBlock(outer_nc, norm_layer), ResidualBlock(outer_nc, norm_layer)]
@@ -126,13 +126,13 @@ class ResUnetSkipConnectionBlock(nn.Module):
 
         if outermost:
             upsample = nn.Upsample(scale_factor=2, mode='nearest')
-            upconv = nn.Conv2d(inner_nc * 2, outer_nc, kernel_size=3, stride=1, padding=1, bias=use_bias)
+            upconv = nn.Conv2d(inner_nc * 2, outer_nc, kernel_size=(3,3), stride=(1,1), padding=1, bias=use_bias)
             down = [downconv, downrelu] + res_downconv
             up = [upsample, upconv]
             model = down + [submodule] + up
         elif innermost:
             upsample = nn.Upsample(scale_factor=2, mode='nearest')
-            upconv = nn.Conv2d(inner_nc, outer_nc, kernel_size=3, stride=1, padding=1, bias=use_bias)
+            upconv = nn.Conv2d(inner_nc, outer_nc, kernel_size=(3,3), stride=(1,1), padding=1, bias=use_bias)
             down = [downconv, downrelu] + res_downconv
             if norm_layer == None:
                 up = [upsample, upconv, uprelu] + res_upconv
@@ -141,7 +141,7 @@ class ResUnetSkipConnectionBlock(nn.Module):
             model = down + up
         else:
             upsample = nn.Upsample(scale_factor=2, mode='nearest')
-            upconv = nn.Conv2d(inner_nc*2, outer_nc, kernel_size=3, stride=1, padding=1, bias=use_bias)
+            upconv = nn.Conv2d(inner_nc*2, outer_nc, kernel_size=(3,3), stride=(1,1), padding=1, bias=use_bias)
             if norm_layer == None:
                 down = [downconv, downrelu] + res_downconv
                 up = [upsample, upconv, uprelu] + res_upconv

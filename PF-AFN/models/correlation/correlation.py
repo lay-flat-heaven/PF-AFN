@@ -294,6 +294,7 @@ class _FunctionCorrelation(torch.autograd.Function):
 
 		# if first.is_cuda == True:
 		# just use cpu，skip the next block
+		'''
 		if False:
 			n = first.shape[2] * first.shape[3]
 			cupy_launch('kernel_Correlation_rearrange', cupy_kernel('kernel_Correlation_rearrange', {
@@ -333,7 +334,7 @@ class _FunctionCorrelation(torch.autograd.Function):
 		elif first.is_cuda == False:
 			pass
 			# raise NotImplementedError()
-
+		'''
 		# end
 
 		return output
@@ -350,6 +351,7 @@ class _FunctionCorrelation(torch.autograd.Function):
 
 		# if first.is_cuda == True:
 		# just use cpu，skip the next block
+		'''
 		if False:
 			if gradFirst is not None:
 				for intSample in range(first.shape[0]):
@@ -390,7 +392,7 @@ class _FunctionCorrelation(torch.autograd.Function):
 		elif first.is_cuda == False:
 			pass
 			# raise NotImplementedError()
-
+		'''
 		# end
 
 		return gradFirst, gradSecond, None
